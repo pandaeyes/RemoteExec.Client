@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import exec.common.Command;
+
 public class DataTableModel extends AbstractTableModel {
 	
-	private List<CmdObject> list = null;
+	private List<Command> list = null;
 	
-	public DataTableModel(List<CmdObject> list) {
+	public DataTableModel(List<Command> list) {
 		MyComparator comparator = new MyComparator();
 		Collections.sort(list, comparator);
 		this.list = list;
@@ -47,15 +49,15 @@ public class DataTableModel extends AbstractTableModel {
 			case 1:
 				return list.get(rowIndex).getDesc();
 			default:
-				return list.get(rowIndex).getDesc();
+				return list.get(rowIndex).getCmd();
 		}
 	}
 	
-	public List<CmdObject> getList() {
+	public List<Command> getList() {
 		return list;
 	}
 	
-	public void replaceList(List<CmdObject> list) {
+	public void replaceList(List<Command> list) {
 		MyComparator comparator = new MyComparator();
 		Collections.sort(list, comparator);
 		this.list = list;
@@ -64,8 +66,8 @@ public class DataTableModel extends AbstractTableModel {
 
 class MyComparator implements Comparator {
 	public int compare(Object arg0, Object arg1) {
-		if (arg0 instanceof CmdObject && arg1 instanceof CmdObject) {
-			return ((CmdObject)arg0).getKey() - (((CmdObject)arg1).getKey());
+		if (arg0 instanceof Command && arg1 instanceof Command) {
+			return ((Command)arg0).getKey().compareTo(((Command)arg1).getKey());
 		} else {
 			return 0;
 		}

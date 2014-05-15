@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<servers>
+    <server domain="127.0.0.1" port="9123" desc="发布服1"/>
+    <server domain="127.0.0.1" port="9123" desc="发布服2"/>
+    <server domain="127.0.0.1" port="9123" desc="发布服3"/>
+    <server domain="127.0.0.1" port="9123" desc="发布服4"/>
+</servers>
