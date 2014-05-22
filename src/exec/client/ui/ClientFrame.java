@@ -33,8 +33,11 @@ import javax.swing.UIManager;
 import exec.client.ClientService;
 import exec.common.Command;
 import exec.proto.SmsObjectC102;
+import exec.proto.SmsObjectC104;
 import exec.proto.SmsObjectS100;
 import exec.proto.SmsObjectS101;
+import exec.proto.SmsObjectS102;
+import exec.proto.SmsObjectS103;
 
 public class ClientFrame extends JFrame {
 	
@@ -49,6 +52,7 @@ public class ClientFrame extends JFrame {
 	private JTextField singleParamTxt = new JTextField();
 	private JButton singleRunBut = new JButton("运行");
 	private Command selectedCommand = null; 
+	private JTextArea runInfo = null;
 	
 	public static void main(String [] args) {
 		try {
@@ -135,6 +139,7 @@ public class ClientFrame extends JFrame {
 					((DataTableModel)selectedTable.getModel()).fireTableDataChanged();
 				}
 				selectedCommand = cmd;
+				singleParamTxt.setText("");
 				singleCmdTxt.setText(cmd.getCmd());
 			}
 		});
@@ -196,6 +201,11 @@ public class ClientFrame extends JFrame {
 		singleEastPane.add(singleParamTxt);
 		singleEastPane.add(Box.createHorizontalStrut(9)); 
 		singleEastPane.add(singleRunBut);
+		singleRunBut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				doRunSingle();
+			}
+		});
 		singlePane.add(new JLabel("CMD:"), BorderLayout.WEST);
 		singlePane.add(singleCmdTxt, BorderLayout.CENTER);
 		singlePane.add(singleEastPane, BorderLayout.EAST);
@@ -206,7 +216,7 @@ public class ClientFrame extends JFrame {
 	public JPanel getRunPane() {
 		JPanel runPane = new JPanel();
 		runPane.setLayout(new BorderLayout());
-		JTextArea runInfo = new JTextArea();
+		runInfo = new JTextArea();
 		runInfo.setEditable(false);
 		runPane.add(new JScrollPane(runInfo), BorderLayout.CENTER);
 		runPane.setBorder(BorderFactory.createTitledBorder("运行结果"));
@@ -222,11 +232,19 @@ public class ClientFrame extends JFrame {
 		}
 	}
 	
+	public void handle(SmsObjectS103 sms103) {
+		JOptionPane.showMessageDialog(this, sms103.getLine(), "提示信息",1);
+	}
+	
 	public void handle(SmsObjectS101 s101) {
 		List<Command> cmdList = s101.getCmdList();
 		DataTableModel model = (DataTableModel)table.getModel();
 		model.replaceList(cmdList);
 		model.fireTableDataChanged();
+	}
+	
+	public void handle(SmsObjectS102 s102) {
+		GUIUtils.areaAppend(runInfo, s102.getLine());
 	}
 	
 	private void comboBoxActionPerformed(Object values) {
@@ -240,18 +258,32 @@ public class ClientFrame extends JFrame {
 		}
 	}
 	
-	private  void doRunBatch() {
+	private void doRunBatch() {
 		List<Command> cmdList = new ArrayList<Command>();
 		cmdList = ((DataTableModel)selectedTable.getModel()).getList();
 		if (cmdList.size() < 1) {
 			JOptionPane.showMessageDialog(this, "请选择命令！", "提示信息",1);
 			return;
 		} else {
+			runInfo.setText("");
 			SmsObjectC102 sms102 = new SmsObjectC102();
 			for (Command cmd : cmdList) {
 				sms102.getCmdList().add(cmd.getKey());
 			}
 			ClientService.getInstance().send(sms102);
+		}
+	}
+	
+	private void doRunSingle() {
+		String param = singleParamTxt.getText().trim();
+		if (param.matches("(\\w*_*)*")) {
+			runInfo.setText("");
+			SmsObjectC104 sms104 = new SmsObjectC104();
+			sms104.setParam(param);
+			sms104.setCmdkey(selectedCommand.getKey());
+			ClientService.getInstance().send(sms104);
+		} else {
+			JOptionPane.showMessageDialog(this, "参数非法，只能输入英文字母、数字和下划线！", "提示信息",1);
 		}
 	}
 }

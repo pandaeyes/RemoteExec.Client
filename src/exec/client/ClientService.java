@@ -31,6 +31,8 @@ import exec.common.ISmsObject;
 import exec.common.License;
 import exec.proto.SmsObjectS100;
 import exec.proto.SmsObjectS101;
+import exec.proto.SmsObjectS102;
+import exec.proto.SmsObjectS103;
 
 public class ClientService {
 	
@@ -107,6 +109,16 @@ public class ClientService {
 	}
 	
 	public ISmsObject handle(SmsObjectS101 sms) {
+		frame.handle(sms);
+		return null;
+	}
+	
+	public ISmsObject handle(SmsObjectS102 sms) {
+		frame.handle(sms);
+		return null;
+	}
+	
+	public ISmsObject handle(SmsObjectS103 sms) {
 		frame.handle(sms);
 		return null;
 	}
