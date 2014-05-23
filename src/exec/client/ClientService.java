@@ -229,7 +229,7 @@ public class ClientService {
 				BufferedWriter confBf =new BufferedWriter(write);
 				confBf.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
 				confBf.write("<License>\r\n");
-				confBf.write("<version></version>\r\n");
+				confBf.write("<version>20140523</version>\r\n");
 				confBf.write("<name></name>\r\n");
 				confBf.write("<signature></signature>\r\n");
 				confBf.write("</License>\r\n");

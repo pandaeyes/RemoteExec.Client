@@ -132,6 +132,7 @@ public class ClientFrame extends JFrame {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getTableHeader().setReorderingAllowed(false);
 		table.setPreferredScrollableViewportSize(new Dimension(50, 200));
+		table.getColumnModel().getColumn(0).setMaxWidth(22);
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e){
 				int row =((JTable)e.getSource()).getSelectedRow();
@@ -145,7 +146,7 @@ public class ClientFrame extends JFrame {
 				singleCmdTxt.setText(cmd.getCmd());
 			}
 		});
-		
+		table.addKeyListener(new TableKeyAdapter());
 		JScrollPane scrollPane = new JScrollPane(table);
 		cmdPane.add(scrollPane, BorderLayout.CENTER);
 		
@@ -173,12 +174,14 @@ public class ClientFrame extends JFrame {
 			}
 		});
 		bathRunBut.setEnabled(false);
+		singleRunBut.setEnabled(false);
 		nPane.add(bathRunBut, BorderLayout.EAST);
 		execPane.add(nPane, BorderLayout.NORTH);
 		selectedTable = new TipJTable(new DataTableModel(new ArrayList<Command>()));
 		selectedTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		selectedTable.getTableHeader().setReorderingAllowed(false);
 		selectedTable.setPreferredScrollableViewportSize(new Dimension(370, 100));
+		selectedTable.getColumnModel().getColumn(0).setMaxWidth(22);
 		selectedTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e){
 				if (e.getClickCount() == 2) {
@@ -188,6 +191,7 @@ public class ClientFrame extends JFrame {
 				}
 			}
 		});
+		selectedTable.addKeyListener(new TableKeyAdapter());
 		new TableDragSource(selectedTable);
 		new TableDropTarget(selectedTable);
 		execPane.add(new JScrollPane(selectedTable), BorderLayout.CENTER);

@@ -21,8 +21,10 @@ public class DataTableModel extends AbstractTableModel {
 	public String getColumnName(int col){
 		switch(col) {
 			case 0:
-				return "索引";
+				return "";
 			case 1:
+				return "索引";
+			case 2:
 				return "描述";
 			default:
 				return "命令";
@@ -36,7 +38,7 @@ public class DataTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 3;
+		return 4;
 	}
 
 	@Override
@@ -45,8 +47,10 @@ public class DataTableModel extends AbstractTableModel {
 			return null;
 		switch(columnIndex) {
 			case 0:
-				return list.get(rowIndex).getKey();
+				return rowIndex + 1;
 			case 1:
+				return list.get(rowIndex).getKey();
+			case 2:
 				return list.get(rowIndex).getDesc();
 			default:
 				return list.get(rowIndex).getCmd();

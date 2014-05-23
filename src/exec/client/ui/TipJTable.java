@@ -24,18 +24,20 @@ public class TipJTable extends JTable {
         int colIndex = columnAtPoint(p); 
         int realColumnIndex = convertColumnIndexToModel(colIndex);
         List<Command> list = ((DataTableModel)getModel()).getList();
+        Command cmd = null;
         if (rowIndex > (list.size() + 1)) {
         	tip = super.getToolTipText(e); 
         } else {
+        	cmd = list.get(rowIndex);
         	switch(realColumnIndex) {
-	        	case 0:
-	        		tip = list.get(rowIndex).getKey();
-	        		break;
 	        	case 1:
-	        		tip = list.get(rowIndex).getDesc();
+	        		tip = cmd.getKey();
 	        		break;
 	        	case 2:
-	        		tip = list.get(rowIndex).getCmd();
+	        		tip = cmd.getDesc();
+	        		break;
+	        	case 3:
+	        		tip = cmd.getCmd();
 	        		break;
 	        	default:
 	        		tip = null;
@@ -51,7 +53,11 @@ public class TipJTable extends JTable {
         			sb.append(tip.charAt(i));
         		}
         	}
-        	tip = "<html>"  + sb.toString() + "</html>";
+        	if (realColumnIndex == 3) {
+        		tip = "<html>" + "<font color=\"#0000ff\">[" + replaceHTML(cmd.getDir()) + "]</font><br>"  + sb.toString() + "</html>";
+        	} else {
+        		tip = "<html>" + sb.toString() + "</html>";
+        	}
         }
 		return tip;
 	}
