@@ -128,7 +128,7 @@ public class ClientFrame extends JFrame {
 		comboPane.add(srvListCombo, BorderLayout.CENTER);
 		comboPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
 		cmdPane.add(comboPane, BorderLayout.NORTH);
-		table = new JTable(new DataTableModel(new ArrayList<Command>()));
+		table = new TipJTable(new DataTableModel(new ArrayList<Command>()));
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getTableHeader().setReorderingAllowed(false);
 		table.setPreferredScrollableViewportSize(new Dimension(50, 200));
@@ -175,7 +175,7 @@ public class ClientFrame extends JFrame {
 		bathRunBut.setEnabled(false);
 		nPane.add(bathRunBut, BorderLayout.EAST);
 		execPane.add(nPane, BorderLayout.NORTH);
-		selectedTable = new JTable(new DataTableModel(new ArrayList<Command>()));
+		selectedTable = new TipJTable(new DataTableModel(new ArrayList<Command>()));
 		selectedTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		selectedTable.getTableHeader().setReorderingAllowed(false);
 		selectedTable.setPreferredScrollableViewportSize(new Dimension(370, 100));
@@ -258,6 +258,11 @@ public class ClientFrame extends JFrame {
 		}
 		bathRunBut.setEnabled(true);
 		singleRunBut.setEnabled(true);
+	}
+	
+	public void linkError() {
+		JOptionPane.showMessageDialog(this, "连接失败", "提示信息",1);
+		srvListCombo.setSelectedIndex(0);
 	}
 	
 	private void comboBoxActionPerformed(Object values) {

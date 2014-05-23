@@ -83,7 +83,11 @@ public class ClientService {
 			clientNio.close();
 			clientNio = null;
 		}
-		clientNio = new ClientNio(server.getDomain(), server.getPort());
+		try {
+			clientNio = new ClientNio(server.getDomain(), server.getPort());
+		} catch(Exception e) {
+			log.error("连接失败");
+		}
 	}
 	
 	public boolean send(ISmsObject sms) {
@@ -134,7 +138,6 @@ public class ClientService {
 		frame.handle(sms);
 		return null;
 	}
-
 	
 	public ISmsObject handle(ISmsObject obj) {
 		Class c = obj.getClass();
@@ -155,6 +158,10 @@ public class ClientService {
 			}
 			return (ISmsObject)returnSms;
 		}
+	}
+	
+	public void linkError() {
+		frame.linkError();
 	}
 	
 	private List<ServerObject> readServers() {

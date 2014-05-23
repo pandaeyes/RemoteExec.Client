@@ -8,12 +8,14 @@ import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoConnector;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.DefaultSocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import exec.common.SmsCodecFactory;
 
 public class ClientNio {
+	private final static Logger log = LoggerFactory.getLogger(ClientNio.class);
 	
 	private IoConnector connector = null;
 	private IoSession session = null;
@@ -28,8 +30,13 @@ public class ClientNio {
 		ConnectFuture future = connector.connect(new InetSocketAddress(domain, port));
 		future.addListener(new IoFutureListener<ConnectFuture>() { 
 			@Override 
-			public void operationComplete(ConnectFuture future) { 
-				session = future.getSession(); 
+			public void operationComplete(ConnectFuture future) {
+				try {
+					session = future.getSession();
+				} catch(Exception e) {
+					ClientService.getInstance().linkError();
+					log.error("连接失败");
+				}
 			} 
 		}); 
 	}
