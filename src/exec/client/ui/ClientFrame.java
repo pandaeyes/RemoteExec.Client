@@ -38,6 +38,7 @@ import exec.proto.SmsObjectS100;
 import exec.proto.SmsObjectS101;
 import exec.proto.SmsObjectS102;
 import exec.proto.SmsObjectS103;
+import exec.proto.SmsObjectS104;
 
 public class ClientFrame extends JFrame {
 	
@@ -53,6 +54,7 @@ public class ClientFrame extends JFrame {
 	private JButton singleRunBut = new JButton("运行");
 	private Command selectedCommand = null; 
 	private JTextArea runInfo = null;
+	private JComboBox srvListCombo = null;
 	
 	public static void main(String [] args) {
 		try {
@@ -105,7 +107,7 @@ public class ClientFrame extends JFrame {
 		for (ServerObject obj : serverList) {
 			comboboxModel.addElement(obj);
 		}
-		JComboBox srvListCombo = new JComboBox(comboboxModel);
+		srvListCombo = new JComboBox(comboboxModel);
 		srvListCombo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object select = comboboxModel.getSelectedItem();
@@ -165,6 +167,8 @@ public class ClientFrame extends JFrame {
 		nPane.add(butPane, BorderLayout.WEST);
 		bathRunBut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				bathRunBut.setEnabled(false);
+				singleRunBut.setEnabled(false);
 				doRunBatch();
 			}
 		});
@@ -225,15 +229,12 @@ public class ClientFrame extends JFrame {
 	
 	public void handle(SmsObjectS100 s100) {
 		if (s100.getSucc() == 0) {
-			JOptionPane.showMessageDialog(this, "校验失败，你可能没有权限！", "校验结果",1);
+			JOptionPane.showMessageDialog(this, s100.getMsg(), "校验结果",1);
+			srvListCombo.setSelectedIndex(0);
 		} else {
 			bathRunBut.setEnabled(true);
 			singleRunBut.setEnabled(true);
 		}
-	}
-	
-	public void handle(SmsObjectS103 sms103) {
-		JOptionPane.showMessageDialog(this, sms103.getLine(), "提示信息",1);
 	}
 	
 	public void handle(SmsObjectS101 s101) {
@@ -245,6 +246,18 @@ public class ClientFrame extends JFrame {
 	
 	public void handle(SmsObjectS102 s102) {
 		GUIUtils.areaAppend(runInfo, s102.getLine());
+	}
+	
+	public void handle(SmsObjectS103 sms103) {
+		JOptionPane.showMessageDialog(this, sms103.getLine(), "提示信息",1);
+	}
+	
+	public void handle(SmsObjectS104 sms104) {
+		if (sms104.getResult() == 0) {
+			JOptionPane.showMessageDialog(this, "执行失败", "提示信息",1);
+		}
+		bathRunBut.setEnabled(true);
+		singleRunBut.setEnabled(true);
 	}
 	
 	private void comboBoxActionPerformed(Object values) {
@@ -275,6 +288,8 @@ public class ClientFrame extends JFrame {
 	}
 	
 	private void doRunSingle() {
+		bathRunBut.setEnabled(false);
+		singleRunBut.setEnabled(false);
 		String param = singleParamTxt.getText().trim();
 		if (param.matches("(\\w*_*)*")) {
 			runInfo.setText("");

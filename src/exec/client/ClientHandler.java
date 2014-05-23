@@ -21,6 +21,7 @@ public class ClientHandler extends IoHandlerAdapter {
 		SmsObjectC100 sms100 = new SmsObjectC100();
 		sms100.setName(license.getName());
 		sms100.setSignature(license.getSignature());
+		sms100.setVersion(ClientService.getInstance().getVersion());
 		session.write(sms100);
     }
 	

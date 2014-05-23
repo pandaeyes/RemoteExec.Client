@@ -22,6 +22,7 @@ public class ClientNio {
 		connector.setConnectTimeoutMillis(30000);
 		connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new SmsCodecFactory(Charset.forName(("UTF-8")))));
 		connector.setHandler(new ClientHandler()); 
+		connector.getSessionConfig().setReadBufferSize(2048*100);
 		ConnectFuture future = connector.connect(new InetSocketAddress(domain, 9123));
 		future.addListener(new IoFutureListener<ConnectFuture>() { 
 			@Override 

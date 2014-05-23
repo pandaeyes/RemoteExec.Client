@@ -33,6 +33,7 @@ import exec.proto.SmsObjectS100;
 import exec.proto.SmsObjectS101;
 import exec.proto.SmsObjectS102;
 import exec.proto.SmsObjectS103;
+import exec.proto.SmsObjectS104;
 
 public class ClientService {
 	
@@ -44,6 +45,7 @@ public class ClientService {
 	private License license = null;
 	private Map<Class, Method> methodList = new HashMap<Class, Method>();
 	private ClientFrame frame = null;
+	private String version = "test";
 	
 	private ClientService(){
 		Method [] Methods = this.getClass().getMethods();
@@ -54,6 +56,7 @@ public class ClientService {
 			}
 		}
 		buildlicenseFile();
+		buildServersFile();
 	}
 	public static ClientService getInstance() {
 		if (instance == null)
@@ -99,6 +102,10 @@ public class ClientService {
 		return license;
 	}
 	
+	public String getVersion() {
+		return version;
+	}
+	
 	public void setFrame(ClientFrame frame) {
 		this.frame = frame;
 	}
@@ -119,6 +126,11 @@ public class ClientService {
 	}
 	
 	public ISmsObject handle(SmsObjectS103 sms) {
+		frame.handle(sms);
+		return null;
+	}
+	
+	public ISmsObject handle(SmsObjectS104 sms) {
 		frame.handle(sms);
 		return null;
 	}
@@ -191,6 +203,8 @@ public class ClientService {
 		    			license.setName(element.getTextContent());
 		    		} else if (element.getTagName().equals("signature") && element.getNodeType() == Node.ELEMENT_NODE) {
 		    			license.setSignature(element.getTextContent());
+		    		} else if (element.getTagName().equals("version") && element.getNodeType() == Node.ELEMENT_NODE) {
+		    			version = element.getTextContent();
 		    		}
 		    	}
 		    }
@@ -211,6 +225,28 @@ public class ClientService {
 				confBf.write("<name></name>\r\n");
 				confBf.write("<signature></signature>\r\n");
 				confBf.write("</License>\r\n");
+				confBf.close();
+				write.close();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void buildServersFile() {
+		File file = new File("servers.xml");
+		if (!file.isFile()) {
+			try {
+				OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(file),"UTF-8");
+				BufferedWriter confBf =new BufferedWriter(write);
+				confBf.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n");
+				confBf.write("<servers>\r\n");
+				confBf.write("<server domain=\"127.0.0.1\" port=\"8090\" desc=\"本地测试服\"/>\r\n");
+				confBf.write("</servers>\r\n");
 				confBf.close();
 				write.close();
 			} catch (UnsupportedEncodingException e) {
