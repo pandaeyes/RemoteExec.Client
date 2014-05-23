@@ -8,6 +8,7 @@ import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoConnector;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.transport.socket.DefaultSocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import exec.common.SmsCodecFactory;
@@ -19,11 +20,12 @@ public class ClientNio {
 
 	public ClientNio(String domain, int port) {
 		connector = new NioSocketConnector();
-		connector.setConnectTimeoutMillis(30000);
+		connector.setConnectTimeoutMillis(10000);
 		connector.getFilterChain().addLast("codec", new ProtocolCodecFilter(new SmsCodecFactory(Charset.forName(("UTF-8")))));
 		connector.setHandler(new ClientHandler()); 
 		connector.getSessionConfig().setReadBufferSize(2048*100);
-		ConnectFuture future = connector.connect(new InetSocketAddress(domain, 9123));
+//		((DefaultSocketSessionConfig)connector.getSessionConfig()).setTcpNoDelay(true);
+		ConnectFuture future = connector.connect(new InetSocketAddress(domain, port));
 		future.addListener(new IoFutureListener<ConnectFuture>() { 
 			@Override 
 			public void operationComplete(ConnectFuture future) { 

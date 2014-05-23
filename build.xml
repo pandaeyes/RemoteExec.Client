@@ -38,6 +38,7 @@
             <fileset dir="${basedir}/build/classes">
             </fileset>
         </jar>
+    	<echo file="${basedir}/dist/client.bat" message="java -jar client.jar" />
         <copy todir="${basedir}/dist">
             <fileset dir="${basedir}/../RemoteExec.Common/lib">
                 <include name="*.jar" />
