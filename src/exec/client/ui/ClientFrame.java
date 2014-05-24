@@ -34,11 +34,13 @@ import exec.client.ClientService;
 import exec.common.Command;
 import exec.proto.SmsObjectC102;
 import exec.proto.SmsObjectC104;
+import exec.proto.SmsObjectC105;
 import exec.proto.SmsObjectS100;
 import exec.proto.SmsObjectS101;
 import exec.proto.SmsObjectS102;
 import exec.proto.SmsObjectS103;
 import exec.proto.SmsObjectS104;
+import exec.proto.SmsObjectS105;
 
 public class ClientFrame extends JFrame {
 	
@@ -49,6 +51,7 @@ public class ClientFrame extends JFrame {
 	private JTable table = null;
 	private JTable selectedTable = null;
 	private JButton bathRunBut = new JButton("运行");
+	private JButton reloadBut = new JButton("重载");
 	private JTextField singleCmdTxt = new JTextField();
 	private JTextField singleParamTxt = new JTextField();
 	private JButton singleRunBut = new JButton("运行");
@@ -114,6 +117,7 @@ public class ClientFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Object select = comboboxModel.getSelectedItem();
 				if (!select.equals(comboBoxVal)) {
+					reloadBut.setEnabled(false);
 					bathRunBut.setEnabled(false);
 					singleRunBut.setEnabled(false);
 					selectedCommand = null;
@@ -167,15 +171,26 @@ public class ClientFrame extends JFrame {
 			}
 		});
 		butPane.add(eLabel);
+		butPane.add(Box.createHorizontalStrut(8));
+		butPane.add(reloadBut);
+		reloadBut.setVisible(false);
 		eLabel.setForeground(Color.BLUE);
 		nPane.add(butPane, BorderLayout.WEST);
 		bathRunBut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				reloadBut.setEnabled(false);
 				bathRunBut.setEnabled(false);
 				singleRunBut.setEnabled(false);
 				doRunBatch();
 			}
 		});
+		
+		reloadBut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				doReloadBatch();
+			}
+		});
+		reloadBut.setEnabled(false);
 		bathRunBut.setEnabled(false);
 		singleRunBut.setEnabled(false);
 		nPane.add(bathRunBut, BorderLayout.EAST);
@@ -240,8 +255,14 @@ public class ClientFrame extends JFrame {
 			srvListCombo.setSelectedIndex(0);
 		} else {
 			showDialog = true;
+			reloadBut.setEnabled(true);
 			bathRunBut.setEnabled(true);
 			singleRunBut.setEnabled(true);
+			if (s100.getGroup() == 9) {
+				reloadBut.setVisible(true);
+			} else {
+				reloadBut.setVisible(false);
+			}
 		}
 	}
 	
@@ -264,8 +285,15 @@ public class ClientFrame extends JFrame {
 		if (sms104.getResult() == 0) {
 			JOptionPane.showMessageDialog(this, "执行失败", "提示信息",1);
 		}
+		reloadBut.setEnabled(true);
 		bathRunBut.setEnabled(true);
 		singleRunBut.setEnabled(true);
+	}
+	
+	public void handle(SmsObjectS105 sms105) {
+		if (sms105.getSucc() == 1) {
+			JOptionPane.showMessageDialog(this, "重载成功!", "提示信息",1);
+		}
 	}
 	
 	public void linkError() {
@@ -307,10 +335,20 @@ public class ClientFrame extends JFrame {
 		}
 	}
 	
+	private void doReloadBatch() {
+		SmsObjectC105 sms105 = new SmsObjectC105();
+		ClientService.getInstance().send(sms105);
+	}
+	
 	private void doRunSingle() {
+		reloadBut.setEnabled(false);
 		bathRunBut.setEnabled(false);
 		singleRunBut.setEnabled(false);
 		String param = singleParamTxt.getText().trim();
+		if (selectedCommand == null) {
+			JOptionPane.showMessageDialog(this, "请选择执行命令！", "提示信息",1);
+			return;
+		}
 		if (param.matches("(\\w*_*)*")) {
 			runInfo.setText("");
 			SmsObjectC104 sms104 = new SmsObjectC104();

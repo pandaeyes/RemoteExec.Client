@@ -34,6 +34,7 @@ import exec.proto.SmsObjectS101;
 import exec.proto.SmsObjectS102;
 import exec.proto.SmsObjectS103;
 import exec.proto.SmsObjectS104;
+import exec.proto.SmsObjectS105;
 
 public class ClientService {
 	
@@ -136,6 +137,10 @@ public class ClientService {
 	}
 	
 	public ISmsObject handle(SmsObjectS104 sms) {
+		frame.handle(sms);
+		return null;
+	}
+	public ISmsObject handle(SmsObjectS105 sms) {
 		frame.handle(sms);
 		return null;
 	}
