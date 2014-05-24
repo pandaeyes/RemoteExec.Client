@@ -37,6 +37,7 @@
         <jar destfile="${basedir}/build/client.jar" manifest="${basedir}/MANIFEST.MF">
             <fileset dir="${basedir}/build/classes">
             </fileset>
+        	<fileset file="${basedir}/../RemoteExec.Common/src/log4j.properties" />
         </jar>
     	<echo file="${basedir}/dist/client.bat" message="java -jar client.jar" />
         <copy todir="${basedir}/dist">

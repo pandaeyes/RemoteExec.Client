@@ -55,6 +55,7 @@ public class ClientFrame extends JFrame {
 	private Command selectedCommand = null; 
 	private JTextArea runInfo = null;
 	private JComboBox srvListCombo = null;
+	private boolean showDialog = true;
 	
 	public static void main(String [] args) {
 		try {
@@ -79,6 +80,7 @@ public class ClientFrame extends JFrame {
 		GUIUtils.centerWindow(this);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
+				showDialog = false;
 				ClientService.getInstance().closeConnect();
 			}
 		});
@@ -121,6 +123,7 @@ public class ClientFrame extends JFrame {
 					((DataTableModel)selectedTable.getModel()).fireTableDataChanged();
 					
 					comboBoxVal = select;
+					showDialog = false;
 					comboBoxActionPerformed(select);
 				}
 			}
@@ -236,6 +239,7 @@ public class ClientFrame extends JFrame {
 			JOptionPane.showMessageDialog(this, s100.getMsg(), "校验结果",1);
 			srvListCombo.setSelectedIndex(0);
 		} else {
+			showDialog = true;
 			bathRunBut.setEnabled(true);
 			singleRunBut.setEnabled(true);
 		}
@@ -267,6 +271,13 @@ public class ClientFrame extends JFrame {
 	public void linkError() {
 		JOptionPane.showMessageDialog(this, "连接失败", "提示信息",1);
 		srvListCombo.setSelectedIndex(0);
+	}
+	
+	public void closeConnect() {
+		if (showDialog) {
+			JOptionPane.showMessageDialog(this, "与服务链接已经断开", "提示信息",1);
+			srvListCombo.setSelectedIndex(0);
+		}
 	}
 	
 	private void comboBoxActionPerformed(Object values) {

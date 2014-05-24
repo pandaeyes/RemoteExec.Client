@@ -33,6 +33,7 @@ public class ClientNio {
 			public void operationComplete(ConnectFuture future) {
 				try {
 					session = future.getSession();
+					log.info("连接成功");
 				} catch(Exception e) {
 					ClientService.getInstance().linkError();
 					log.error("连接失败");
@@ -47,7 +48,7 @@ public class ClientNio {
 	
 	public void close() {
 		if (session != null)
-			session.close(true);
+			session.close(false);
 		connector.dispose();
 	}
 }

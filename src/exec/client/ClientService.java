@@ -75,6 +75,7 @@ public class ClientService {
 		if (clientNio != null) {
 			clientNio.close();
 			clientNio = null;
+			frame.closeConnect();
 		}
 	}
 	
