@@ -28,7 +28,10 @@ public class GUIUtils {
 				area.append("\r\n");
 			}
 			area.append(text);
-			area.setCaretPosition(area.getDocument().getLength());
+			int l = area.getDocument().getLength();
+			if (text.length() < l)
+				l = l - text.length();
+			area.setCaretPosition(l);
 		}
 	}
 	

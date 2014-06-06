@@ -117,9 +117,7 @@ public class ClientFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Object select = comboboxModel.getSelectedItem();
 				if (!select.equals(comboBoxVal)) {
-					reloadBut.setEnabled(false);
-					bathRunBut.setEnabled(false);
-					singleRunBut.setEnabled(false);
+					setButEditable(false);
 					selectedCommand = null;
 					singleCmdTxt.setText("");
 					singleParamTxt.setText("");
@@ -178,9 +176,6 @@ public class ClientFrame extends JFrame {
 		nPane.add(butPane, BorderLayout.WEST);
 		bathRunBut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				reloadBut.setEnabled(false);
-				bathRunBut.setEnabled(false);
-				singleRunBut.setEnabled(false);
 				doRunBatch();
 			}
 		});
@@ -190,9 +185,7 @@ public class ClientFrame extends JFrame {
 				doReloadBatch();
 			}
 		});
-		reloadBut.setEnabled(false);
-		bathRunBut.setEnabled(false);
-		singleRunBut.setEnabled(false);
+		setButEditable(false);
 		nPane.add(bathRunBut, BorderLayout.EAST);
 		execPane.add(nPane, BorderLayout.NORTH);
 		selectedTable = new TipJTable(new DataTableModel(new ArrayList<Command>()));
@@ -255,9 +248,7 @@ public class ClientFrame extends JFrame {
 			srvListCombo.setSelectedIndex(0);
 		} else {
 			showDialog = true;
-			reloadBut.setEnabled(true);
-			bathRunBut.setEnabled(true);
-			singleRunBut.setEnabled(true);
+			setButEditable(true);
 			if (s100.getGroup() == 9) {
 				reloadBut.setVisible(true);
 			} else {
@@ -285,9 +276,7 @@ public class ClientFrame extends JFrame {
 		if (sms104.getResult() == 0) {
 			JOptionPane.showMessageDialog(this, "执行失败", "提示信息",1);
 		}
-		reloadBut.setEnabled(true);
-		bathRunBut.setEnabled(true);
-		singleRunBut.setEnabled(true);
+		setButEditable(true);
 	}
 	
 	public void handle(SmsObjectS105 sms105) {
@@ -320,15 +309,23 @@ public class ClientFrame extends JFrame {
 	}
 	
 	private void doRunBatch() {
+		setButEditable(false);
 		List<Command> cmdList = new ArrayList<Command>();
 		cmdList = ((DataTableModel)selectedTable.getModel()).getList();
 		if (cmdList.size() < 1) {
 			JOptionPane.showMessageDialog(this, "请选择命令！", "提示信息",1);
+			setButEditable(true);
 			return;
 		} else {
 			runInfo.setText("");
 			SmsObjectC102 sms102 = new SmsObjectC102();
 			for (Command cmd : cmdList) {
+				if (cmd.getCmd() != null
+						&& cmd.getCmd().indexOf("${param}") != -1) {
+					JOptionPane.showMessageDialog(this, "批量执行不可以有带参数命令！", "提示信息",1);
+					setButEditable(true);
+					return;
+				}
 				sms102.getCmdList().add(cmd.getKey());
 			}
 			ClientService.getInstance().send(sms102);
@@ -341,12 +338,18 @@ public class ClientFrame extends JFrame {
 	}
 	
 	private void doRunSingle() {
-		reloadBut.setEnabled(false);
-		bathRunBut.setEnabled(false);
-		singleRunBut.setEnabled(false);
+		setButEditable(false);
 		String param = singleParamTxt.getText().trim();
 		if (selectedCommand == null) {
 			JOptionPane.showMessageDialog(this, "请选择执行命令！", "提示信息",1);
+			setButEditable(true);
+			return;
+		}
+		if (selectedCommand.getCmd() != null
+				&& selectedCommand.getCmd().indexOf("${param}") != -1
+				&& param.length() == 0) {
+			JOptionPane.showMessageDialog(this, "命令包含参数，请输入！", "提示信息",1);
+			setButEditable(true);
 			return;
 		}
 		if (param.matches("(\\w*_*)*")) {
@@ -357,6 +360,13 @@ public class ClientFrame extends JFrame {
 			ClientService.getInstance().send(sms104);
 		} else {
 			JOptionPane.showMessageDialog(this, "参数非法，只能输入英文字母、数字和下划线！", "提示信息",1);
+			setButEditable(true);
 		}
+	}
+	
+	private void setButEditable(boolean editable) {
+		reloadBut.setEnabled(editable);
+		bathRunBut.setEnabled(editable);
+		singleRunBut.setEnabled(editable);
 	}
 }
