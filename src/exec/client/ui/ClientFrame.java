@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -76,8 +77,13 @@ public class ClientFrame extends JFrame {
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(mainPane, BorderLayout.CENTER);
 		mainPane.setLayout(new BorderLayout());
-		mainPane.add(getNorthPane(), BorderLayout.NORTH);
-		mainPane.add(getRunPane(), BorderLayout.CENTER);
+		JPanel upPane = getNorthPane();
+		JPanel downPane = getRunPane();
+		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upPane, downPane);
+		split.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+//		mainPane.add(upPane, BorderLayout.NORTH);
+//		mainPane.add(downPane, BorderLayout.CENTER);
+		mainPane.add(split, BorderLayout.CENTER);
 		setSize(dimension);
 		setTitle(title);
 		GUIUtils.centerWindow(this);
@@ -136,7 +142,7 @@ public class ClientFrame extends JFrame {
 		table = new TipJTable(new DataTableModel(new ArrayList<Command>()));
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getTableHeader().setReorderingAllowed(false);
-		table.setPreferredScrollableViewportSize(new Dimension(50, 200));
+		table.setPreferredScrollableViewportSize(new Dimension(50, 150));
 		table.getColumnModel().getColumn(0).setMaxWidth(22);
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e){
